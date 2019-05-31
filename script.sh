@@ -114,6 +114,7 @@ echo "NGINX reloaded"
 # sudo service apache2 reload
 ### <-- APACHE RELOADER
 
+### LOG -->
 printf "%s\n:::CONFIGURATION:::\n%s\n" $LOG_DELIMETR_PRIMARY $LOG_DELIMETR_PRIMARY
 printf "URL: \n%s\n%s\n%s\n" "https://cdn.virgilsecurity.com/virgil-crypto/php/virgil-crypto-2.6.3-php-7.2-linux-x86_64.tgz" "$LINK_MAIN_FORMAT" $LOG_DELIMETR_SECONDARY
 printf "OS: %s\n%s\n" "$UNAME" $LOG_DELIMETR_SECONDARY
@@ -123,3 +124,4 @@ printf "PHP.INI: %s\n%s\n" "$PHP_INI_FILE" $LOG_DELIMETR_SECONDARY
 printf "Extensions directory: %s\n%s\n" $EXTENSION_DIR $LOG_DELIMETR_SECONDARY
 printf "Extension virgil_crypto_php: %s\n%s\n" "$STATUS_VIRGIL_CRYPTO_PHP" $LOG_DELIMETR_SECONDARY
 printf "Extension vsce_phe_php: %s\n%s\n" "$STATUS_VSCE_PHE_PHP" $LOG_DELIMETR_PRIMARY
+### <-- LOG
