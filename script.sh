@@ -1,5 +1,4 @@
 clear
-
 ### MAIN CONFIG -->
 LATEST_VERSION="2.6.3"
 PHP="php"
@@ -84,7 +83,7 @@ then
 	### <-- FORMAT LINK
 
 	### GET EXTENSION FILE --> 
-	mkdir $DOWNLOAD_DIR
+	mkdir -p $DOWNLOAD_DIR
 	wget -O $DOWNLOAD_DIR/$LINK_ARCHIVE_FORMAT -c --progress=dot $LINK_MAIN_FORMAT
 	tar -xzvf $DOWNLOAD_DIR/$LINK_ARCHIVE_FORMAT -C $DOWNLOAD_DIR
 
@@ -98,9 +97,16 @@ then
 	### LINK CHECKER -->
 	### <-- LINK CHECKER
 
-	### UPDATE PHP.INI -->
-	echo -e "extension=$EXTENSION_NAME_VIRGIL_CRYPTO_PHP" >> $PHP_INI_FILE/php.ini
-	### <-- UPDATE PHP.INI
+	### CHECK AND UPDATE PHP.INI -->
+	TEMPLATE=extension=$EXTENSION_NAME_VIRGIL_CRYPTO_PHP
+	COMMENTED=";"
+	COUNT_COMMENTED=$(grep -c -i -w $COMMENTED$TEMPLATE $PHP_INI_FILE/php.ini)
+	COUNT=$(grep -c -i -w $TEMPLATE $PHP_INI_FILE/php.ini)
+	if [ $COUNT_COMMENTED -eq $COUNT ] 
+	then
+	printf "\n%s" $TEMPLATE >> $PHP_INI_FILE/php.ini
+	fi
+	### <-- CHECK AND UPDATE PHP.INI
 
 	### UPDATE EXTENSION DIR -->
 	cp $DOWNLOADED_EXTENSION $EXTENSION_DIR
