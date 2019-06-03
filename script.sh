@@ -112,11 +112,11 @@ then
 	cp $DOWNLOADED_EXTENSION $EXTENSION_DIR
 	### <--UPDATE EXTENSION DIR 
 
-	### NGINX RELOADER -->
-	service nginx reload
+	### PHP7.2-FPM RELOADER -->
+	service php7.2-fpm restart
 	echo $LOG_DELIMETR
-	echo "NGINX reloaded"
-	### <-- NGINX RELOADER
+	echo "PHP7.2-FPM reloaded"
+	### <-- PHP7.2-FPM RELOADER
 
 	### APACHE RELOADER -->
 	# sudo service apache2 reload
