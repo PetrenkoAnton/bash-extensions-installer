@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 clear
 ### MAIN CONFIG -->
 LATEST_VERSION="2.6.3"
