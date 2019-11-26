@@ -176,9 +176,9 @@ restart() {
 	if service --status-all | grep -Fq 'apache2'; then
 		IS_RESTARTED=1   
 	  	sudo service apache2 restart
-	#else service --status-all | grep -Fq 'php7.2-fpm'
-	#	IS_RESTARTED=1
-	#	sudo service php7.2-fpm restart
+	else service --status-all | grep -Fq 'php7.2-fpm'
+		IS_RESTARTED=1
+		sudo service php7.2-fpm reload
 	fi
 
 	if [ $IS_RESTARTED -eq 0 ]; then
