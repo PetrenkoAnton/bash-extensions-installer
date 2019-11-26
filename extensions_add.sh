@@ -33,7 +33,7 @@ get_err() {
 			ERR_MSG="Cannot copy $2 to the $3"
 			;;
 		*)
-			ERR_MSG="Internal error"
+			ERR_MSG="Internal error: $1"
 			;;
 	esac
 
