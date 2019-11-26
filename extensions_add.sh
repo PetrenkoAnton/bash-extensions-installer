@@ -7,7 +7,8 @@ init() {
 	IS_ERR=0
 
 	PATH_TO_SO="extensions/bin/linux"
-	PATH_TO_INI="extensions/ini"
+	PATH_TO_INI="extensions"
+	INI_FILE="virgil_crypto.ini"
 
 	LIST_EXT="vsce_phe_php vscf_foundation_php vscp_pythia_php vscr_ratchet_php"
 
@@ -158,16 +159,13 @@ cp_ext() {
 }
 
 cp_ini() {
-	for EXT in $LIST_EXT
-	do
-		printf "Copying $EXT.ini to the $PHP_INI_DIR... "
-		
-		if sudo cp "$PATH_TO_INI/$EXT.ini" "$PHP_INI_DIR/$EXT.ini"; then
-			get_success
-		else
-			get_err "cp-ini" "$EXT.ini" "$PHP_INI_DIR"
-		fi
-	done
+    printf "Copying $INI_FILE to the $PHP_INI_DIR... "
+
+	if sudo cp "$PATH_TO_INI/$INI_FILE" "$PHP_INI_DIR/$INI_FILE"; then
+		get_success
+	else
+		get_err "cp-ini" "$INI_FILE" "$PHP_INI_DIR"
+	fi
 }
 
 restart() {
@@ -178,7 +176,7 @@ restart() {
 	  	sudo service apache2 restart
 	else service --status-all | grep -Fq 'php7.2-fpm'
 		IS_RESTARTED=1
-		sudo service php7.2-fpm reload
+		sudo service php7.2-fpm restart
 	fi
 
 	if [ $IS_RESTARTED -eq 0 ]; then
@@ -193,6 +191,11 @@ finish() {
 	fi
 }
 
+warning() {
+	printf "%s\nPlease try installing the extension manually in accordance with this instruction:\n" $LOG_DELIMETR
+	echo -e '\e]8;;https://github.com/VirgilSecurity/virgil-purekit-php#additional-information\ahttps://github.com/VirgilSecurity/virgil-purekit-php#additional-information\e]8;;\a'
+}
+
 init
 get_php_v
 get_os
@@ -202,4 +205,5 @@ get_config
 cp_ext
 cp_ini
 restart
+warning
 finish
