@@ -6,8 +6,8 @@ init() {
 	LOG_DELIMETR="----------"
 	IS_ERR=0
 
-	PATH_TO_SO="extensions/linux"
-	PATH_TO_INI="extensions"
+	PATH_TO_SO="extensions/bin/linux"
+	PATH_TO_INI="extensions/ini"
 
 	LIST_EXT="vsce_phe_php vscf_foundation_php vscp_pythia_php vscr_ratchet_php"
 
@@ -203,4 +203,3 @@ cp_ext
 cp_ini
 restart
 finish
-
