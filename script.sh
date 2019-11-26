@@ -15,16 +15,23 @@ get_err() {
 		php-v)
 			ERR_MSG="Invalid PHP version: $2"
 			;;
+		os)
+			ERR_MSG="Invalid OS: $2"
+			;;
+		ext-dir)
+			ERR_MSG="Invalid extensions directory: $2"
+			;;
 		*)
 			ERR_MSG="Internal error"
 			;;
 	esac
 
-	printf "[error]\n%s\nError status: %s\n" $LOG_DELIMETR "$ERR_MSG"
+	printf "[error]\nError status: %s\n" "$ERR_MSG"
+	exit 0
 }
 
 get_success() {
-	printf "[success]\n"
+	printf "[OK]\n"
 }
 
 get_php_v() {
@@ -46,15 +53,54 @@ get_php_v() {
 	fi
 }
 
+get_os() {
+	printf "Checking OS... "
+	OS=$(uname)
+
+	case $OS in
+	     Linux)
+	          OS_="linux-x86_64"
+	          ;;
+	     *)
+	          OS_=""
+	          ;;
+	esac
+
+	if [ -z "$OS_" ]
+	then
+		get_err "os" "$OS"
+	else
+		get_success
+	fi
+}
+
+get_ext_dir() {
+	printf "Checking PHP extensions directory... "
+
+	EXTENSION_DIR=$(php-config --extension-dir)
+
+	if [ -z "EXTENSION_DIR" ]
+	then
+		get_err "ext-dir" "(null)"
+	else
+		get_success
+	fi
+}
+
 get_res() {
 	if [ $IS_ERR -eq 0 ]
 	then
-		printf "%s\nSystem configuration:\n" $LOG_DELIMETR
-		printf "PHP version (short): %s\n" $PHP_VERSION_SHORT
+		printf "%s\nSYSTEM CONFIGURATION:\n" $LOG_DELIMETR
+
+		printf "OS: %s\n" "$OS"
+		printf "PHP version (short): %s\n" "$PHP_VERSION_SHORT"
 		printf "PHP version (full):\n%s\n" "$PHP_VERSION"
+		printf "Extensions directory: %s\n" $EXTENSION_DIR
 	fi
 }
 
 init
 get_php_v
+get_os
+get_ext_dir
 get_res
