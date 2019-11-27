@@ -35,4 +35,13 @@
  * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
  */
 
+$a = [
+    "vscf_foundation_php" => extension_loaded("vscf_foundation_php"),
+    "vsce_phe_php" => extension_loaded("vsce_phe_php"),
+    "vscp_pythia_php" => extension_loaded("vscp_pythia_php"),
+    "vscr_ratchet_php" => extension_loaded("vscr_ratchet_php"),
+];
+
+var_dump($a);
+
 phpinfo();

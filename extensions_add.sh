@@ -4,7 +4,7 @@ clear
 
 init() {
 	LOG_DELIMETR="----------"
-	IS_ERR=0
+	ERR_LEVEL=0
 
 	PATH_TO_SO="extensions/bin/linux"
 	PATH_TO_INI="extensions"
@@ -16,7 +16,7 @@ init() {
 }
 
 get_err() {
-	IS_ERR=1
+	ERR_LEVEL=2
 	case "$1" in
 		php-v)
 			ERR_MSG="Invalid PHP version: $2"
@@ -43,13 +43,14 @@ get_err() {
 }
 
 get_warn() {
+	ERR_LEVEL=1
 	case "$1" in
 		restart)
-			ERR_MSG="Restart your webserver manualy!"
+			WARN_MSG="Restart your webserver manually!"
 			;;
 	esac
 
-	printf "%s\n[WARNING] %s\n" $LOG_DELIMETR "$ERR_MSG"
+	printf "[FAIL]\n"
 }
 
 get_success() {
@@ -133,10 +134,10 @@ get_ini_dir() {
 }
 
 get_config() {
-	if [ $IS_ERR -eq 0 ]; then
+	if [ $ERR_LEVEL -eq 0 ]; then
 		printf "%s\nSYSTEM CONFIGURATION:\n" $LOG_DELIMETR
 
-		printf "OS: %s\n" "$OS"
+		printf "OS (short): %s\n" "$OS"
 		printf "PHP version (short): %s\n" "$PHP_VERSION_SHORT"
 		printf "PHP version (full):\n%s\n" "$PHP_VERSION"
 		printf "Extensions directory: %s\n" "$EXTENSION_DIR"
@@ -169,26 +170,41 @@ cp_ini() {
 }
 
 restart() {
-	IS_RESTARTED=0
 
+	printf "Restarting service... "
 	if service --status-all | grep -Fq 'apache2'; then
-		IS_RESTARTED=1   
-	  	sudo service apache2 restart
-	else service --status-all | grep -Fq 'php7.2-fpm'
-		IS_RESTARTED=1
-		sudo service php7.2-fpm restart
-	fi
-
-	if [ $IS_RESTARTED -eq 0 ]; then
+	  	if sudo service apache2 restart; then
+	  		get_success
+	  	else
+	  		get_warn "restart"
+	  	fi
+	elif service --status-all | grep -Fq 'php7.2-fpm'; then
+		if sudo service php7.2-fpm restart; then
+	  		get_success
+	  	else
+	  		get_warn "restart"
+	  	fi
+	else
 		get_warn "restart"
 	fi
 }
 
 finish() {
-	if [ $IS_ERR -eq 0 ]; then
-		printf "%s\n[DONE]\n" $LOG_DELIMETR
-		exit 1
-	fi
+
+	printf "%s\nSTATUS: " "$LOG_DELIMETR"
+
+	case $ERR_LEVEL in
+	     0)
+	          printf "Success!\n" 
+	          ;;
+	     1)
+	          printf "$WARN_MSG\n"
+	          ;;
+	     *)
+	          get_err "$ERR_LEVEL"
+	esac
+
+	exit 1
 }
 
 warning() {
@@ -205,5 +221,9 @@ get_config
 cp_ext
 cp_ini
 restart
-warning
+
+if [ $ERR_LEVEL -eq 2 ]; then
+	warning
+fi
+
 finish
