@@ -8,14 +8,16 @@ print() {
 
 list_ext="vsce_phe_php vscf_foundation_php vscp_pythia_php vscr_ratchet_php"
 
-cli_fpm="cli fpm"
+for t in "cli fpm"; do
 
-for t in $cli_fpm; do
-	ini="/etc/php/7.2/$t/conf.d/virgil_crypto.ini"
+	for ext in $list_ext; do
+		
+		ini="/etc/php/7.2/$t/conf.d/$ext.ini"
 
-	if [ -f "$ini" ]; then
-		sudo rm "$ini"
-	fi
+		if [ -f "$ini" ]; then
+			sudo rm "$ini"
+		fi
+	done
 done
 
 for ext in $list_ext; do

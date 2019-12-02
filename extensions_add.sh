@@ -2,42 +2,39 @@
 
 clear
 
-ERR_LEVEL=0
-ERR_MSG_NO_INPUT_DATA="No input data"
-PROJECT=0
-LIST_EXT=""
+init() {
+    LOG_DELIMETR="----------"
+    ERR_LEVEL=0
 
-check_input() {
-    printf "Checking input... "
+    PATH_TO_SO="extensions/bin/linux"
+    PATH_TO_INI="extensions/ini"
 
-    if [[ "$1" =~ ^(phe|foundation)$ ]]; then
-        case "$1" in
-            "foundation")
-                PROJECT=1
-                LIST_EXT="vscf_foundation_php"
-                ;;
-            "phe")
-                PROJECT=2
-                LIST_EXT="vscf_foundation_php vsce_phe_php"
-                ;;
-        esac
-        get_success
-    else
-
-        if [ -z "$1" ]; then
-            get_err "input_null"
-        else
-            get_err "input_invalid" "$1"
-        fi
-    fi
+    ERR_LEVEL=0
+    IS_DEV=0
 }
 
-init() {
-	LOG_DELIMETR="----------"
-	ERR_LEVEL=0
+check_input() {
+    printf "Checking input... %s"
 
-	PATH_TO_SO="extensions/bin/linux"
-	PATH_TO_INI="extensions"
+    if [ -z "$1" ]; then
+        get_err "input_null"
+    fi
+
+    LIST_EXT=""
+
+    case "$1" in
+        "foundation")
+            LIST_EXT="vscf_foundation_php"
+            ;;
+        "phe")
+            LIST_EXT="vscf_foundation_php vsce_phe_php"
+            ;;
+        *)
+            get_err "input_invalid" "$1"
+            ;;
+    esac
+
+    get_success
 }
 
 get_err() {
@@ -217,7 +214,7 @@ warning() {
 
 printf "Сrypto extensions installation...\n%s\n" $LOG_DELIMETR
 
-check_input
+check_input "$1"
 init
 get_php_v
 get_os
