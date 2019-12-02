@@ -2,17 +2,42 @@
 
 clear
 
+ERR_LEVEL=0
+ERR_MSG_NO_INPUT_DATA="No input data"
+PROJECT=0
+LIST_EXT=""
+
+check_input() {
+    printf "Checking input... "
+
+    if [[ "$1" =~ ^(phe|foundation)$ ]]; then
+        case "$1" in
+            "foundation")
+                PROJECT=1
+                LIST_EXT="vscf_foundation_php"
+                ;;
+            "phe")
+                PROJECT=2
+                LIST_EXT="vscf_foundation_php vsce_phe_php"
+                ;;
+        esac
+        get_success
+    else
+
+        if [ -z "$1" ]; then
+            get_err "input_null"
+        else
+            get_err "input_invalid" "$1"
+        fi
+    fi
+}
+
 init() {
 	LOG_DELIMETR="----------"
 	ERR_LEVEL=0
 
 	PATH_TO_SO="extensions/bin/linux"
 	PATH_TO_INI="extensions"
-	INI_FILE="virgil_crypto.ini"
-
-	LIST_EXT="vsce_phe_php vscf_foundation_php vscp_pythia_php vscr_ratchet_php"
-
-	printf "Сrypto extensions installation...\n%s\n" $LOG_DELIMETR
 }
 
 get_err() {
@@ -33,6 +58,12 @@ get_err() {
 		cp-ext|cp-ini)
 			ERR_MSG="Cannot copy $2 to the $3"
 			;;
+        input_null)
+            ERR_MSG="Project not specified"
+            ;;
+		input_invalid)
+			ERR_MSG="Invalid project: $2"
+			;;
 		*)
 			ERR_MSG="Internal error: $1"
 			;;
@@ -40,17 +71,6 @@ get_err() {
 
 	printf "[FAIL]\nError status: %s\n" "$ERR_MSG"
 	exit 0
-}
-
-get_warn() {
-	ERR_LEVEL=1
-	case "$1" in
-		restart)
-			WARN_MSG="Restart your webserver manually!"
-			;;
-	esac
-
-	printf "[FAIL]\n"
 }
 
 get_success() {
@@ -160,33 +180,16 @@ cp_ext() {
 }
 
 cp_ini() {
-    printf "Copying $INI_FILE to the $PHP_INI_DIR... "
-
-	if sudo cp "$PATH_TO_INI/$INI_FILE" "$PHP_INI_DIR/$INI_FILE"; then
-		get_success
-	else
-		get_err "cp-ini" "$INI_FILE" "$PHP_INI_DIR"
-	fi
-}
-
-restart() {
-
-	printf "Restarting service... "
-	if service --status-all | grep -Fq 'apache2'; then
-	  	if sudo service apache2 restart; then
-	  		get_success
-	  	else
-	  		get_warn "restart"
-	  	fi
-	elif service --status-all | grep -Fq 'php7.2-fpm'; then
-		if sudo service php7.2-fpm restart; then
-	  		get_success
-	  	else
-	  		get_warn "restart"
-	  	fi
-	else
-		get_warn "restart"
-	fi
+    for EXT in $LIST_EXT
+    do
+        printf "Copying $EXT.ini file to the $PHP_INI_DIR... "
+        
+        if sudo cp "$PATH_TO_INI/$EXT.ini" "$PHP_INI_DIR/$EXT.ini"; then
+            get_success
+        else
+            get_err "cp-ini" "$EXT.ini" "$PHP_INI_DIR"
+        fi
+    done
 }
 
 finish() {
@@ -212,6 +215,9 @@ warning() {
 	echo -e '\e]8;;https://github.com/VirgilSecurity/virgil-purekit-php#additional-information\ahttps://github.com/VirgilSecurity/virgil-purekit-php#additional-information\e]8;;\a'
 }
 
+printf "Сrypto extensions installation...\n%s\n" $LOG_DELIMETR
+
+check_input
 init
 get_php_v
 get_os
@@ -220,7 +226,6 @@ get_ini_dir
 get_config
 cp_ext
 cp_ini
-restart
 
 if [ $ERR_LEVEL -eq 2 ]; then
 	warning
