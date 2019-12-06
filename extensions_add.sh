@@ -192,16 +192,13 @@ cp_ext() {
 cp_ini() {
     for PID in $PHP_INI_DIR
     do
-        for EXT in $LIST_EXT
-        do
-            printf "Copying $EXT.ini file to the $PID... "
+        printf "Copying virgil-crypto.ini file to the $PID... "
 
-            if sudo cp "$PATH_TO_INI/$EXT.ini" "$PID/$EXT.ini"; then
-                get_success
-            else
-                get_err "cp-ini" "$EXT.ini" "$PID"
-            fi
-        done
+        if sudo cp "$PATH_TO_INI/virgil-crypto.ini" "$PID/virgil-crypto.ini"; then
+            get_success
+        else
+            get_err "cp-ini" "virgil-crypto.ini" "$PID"
+        fi
     done
 }
 

@@ -1,47 +1,43 @@
 <?php
-/**
- * Copyright (C) 2015-2019 Virgil Security Inc.
- *
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are
- * met:
- *
- *     (1) Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- *
- *     (2) Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in
- *     the documentation and/or other materials provided with the
- *     distribution.
- *
- *     (3) Neither the name of the copyright holder nor the names of its
- *     contributors may be used to endorse or promote products derived from
- *     this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ''AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT,
- * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
- * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- * Lead Maintainer: Virgil Security Inc. <support@virgilsecurity.com>
- */
 
-$a = [
-    "vscf_foundation_php" => extension_loaded("vscf_foundation_php"),
-    "vsce_phe_php" => extension_loaded("vsce_phe_php"),
-    "vscp_pythia_php" => extension_loaded("vscp_pythia_php"),
-    "vscr_ratchet_php" => extension_loaded("vscr_ratchet_php"),
+const VSCF_FOUNDATION_PHP = "vscf_foundation_php";
+const VSCE_PHE_PHP = "vsce_phe_php";
+const VSCP_PYTHIA_PHP = "vscp_pythia_php";
+const VSCR_RATCHET_PHP = "vscr_ratchet_php";
+
+const EXT_LIST = [VSCF_FOUNDATION_PHP, VSCE_PHE_PHP, VSCP_PYTHIA_PHP, VSCR_RATCHET_PHP];
+
+function getScannedIniDir()
+{
+
+    $res = null;
+    $rawData = php_ini_scanned_files();
+
+    if ($rawData)
+        $res = explode(",", $rawData);
+
+    return pathinfo($res[0], PATHINFO_DIRNAME);
+}
+
+$extArr = [];
+
+foreach (EXT_LIST as $ext) {
+    $extArr[] = [
+        'name' => $ext,
+        'version' => phpversion($ext),
+        'is_extension_loaded' => extension_loaded($ext),
+    ];
+}
+
+$config = [
+    'OS' => PHP_OS,
+    'PHP_VERSION' => PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION,
+    'PATH_TO_EXTENSIONS_DIR' => PHP_EXTENSION_DIR,
+    'PATH_TO_MAIN_PHP.INI' => php_ini_loaded_file(),
+    'PATH_TO_ADDITIONAL_INI_FILES' => getScannedIniDir(),
 ];
 
-var_dump($a);
-
+echo '<pre>', var_dump($extArr, $config), '</pre>';
 phpinfo();
+
+exit(1);
